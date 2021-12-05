@@ -1,14 +1,9 @@
 import json
 import sys
 from datetime import timedelta
-
-import wikipedia
-import httpx
 import redis
 import requests
 from fastapi import FastAPI
-
-
 
 
 def redis_connect() -> redis.client.Redis:
@@ -16,7 +11,7 @@ def redis_connect() -> redis.client.Redis:
         client = redis.Redis(
             host="localhost",
             port=6379,
-            password="ubuntu",
+            # password="ubuntu",
             db=0,
             socket_timeout=5,
         )
@@ -31,53 +26,46 @@ def redis_connect() -> redis.client.Redis:
 client = redis_connect()
 
 
-def get_routes_from_api(q: str):
-    """Data from mapbox api."""
+def get_coins_info_from_api(q: str):
+    """get list of coins with ids and symbol from api"""
 
-    URL = "https://api.coingecko.com/api/v3/coins/list"
-    r = requests.get(url = URL)
-    data1 = r.json()
+    URL = f"https://api.coingecko.com/api/v3/coins/{q}"
+    r = requests.get(url=URL)
+    if r.status_code==404:
+        URL = "https://api.coingecko.com/api/v3/coins/list"
+        r = requests.get(url=URL)
+        json_directory = r.json()
+        # print(json_directory)
+        d = {}
+        for key in json_directory:
+            d[key["symbol"]] = key["id"]
 
-    d = {}
-    for i in data1:       ##### Must be a better way to to this #####
-      d[i["symbol"]]=i["id"]
-    
-
-########################################################
-# api-endpoint
-    idx = d[q]
-    print("----------------------------------------",idx)
-    URL = f"https://api.coingecko.com/api/v3/coins/{idx}"
-
-
-    # sending get request and saving the response as response object
-    r = requests.get(url = URL)
-    
-    # extracting data in json format
-
-
+        idx = d[q]
+        print("----------------------------------------", idx)
+        URL = f"https://api.coingecko.com/api/v3/coins/{idx}"
+        r = requests.get(url=URL)
+        return r.json()
 
     return r.json()
 
 
-def get_routes_from_cache(key: str) -> str:
+def get_coins_info_from_cache(key: str) -> str:
     """Data from redis."""
 
     val = client.get(key)
     return val
 
 
-def set_routes_to_cache(key: str, value: str) -> bool:
+def set_coins_info_to_cache(key: str, value: str) -> bool:
     """Data to redis."""
 
-    state = client.setex(key, timedelta(seconds=3600), value=value,)
+    state = client.setex(key, timedelta(seconds=3600), value=value, )
     return state
 
 
-def route_optima(coordinates: str) -> dict:
-
+def Track_coin(coin: str) -> dict:
     # First it looks for the data in redis cache
-    data = get_routes_from_cache(key=coordinates)
+    data = get_coins_info_from_cache(key=coin)
 
     # If cache is found then serves the data from cache
     if data is not None:
@@ -87,13 +75,13 @@ def route_optima(coordinates: str) -> dict:
 
     else:
         # If cache is not found then sends request to the MapBox API
-        data = get_routes_from_api(coordinates)
+        data = get_coins_info_from_api(coin)
 
         # This block sets saves the respose to redis and serves it directly
         if data.get("code") == "Ok":
             data["cache"] = False
             data = json.dumps(data)
-            state = set_routes_to_cache(key=coordinates, value=data)
+            state = set_coins_info_to_cache(key=coin, value=data)
 
             if state is True:
                 return json.loads(data)
@@ -103,12 +91,6 @@ def route_optima(coordinates: str) -> dict:
 app = FastAPI()
 
 
-@app.get("/route-optima/{coordinates}")
-def view(coordinates: str) -> dict:
-    """This will wrap our original route optimization API and
-    incorporate Redis Caching. You'll only expose this API to
-    the end user. """
-
-    # coordinates = "90.3866,23.7182;90.3742,23.7461"
-
-    return route_optima(coordinates)
+@app.get("/coin-tracker/{coin}")
+def view(coin: str) -> dict:
+    return Track_coin(coin)
