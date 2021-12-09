@@ -15,7 +15,7 @@ CryptoTrackerr is a wrapper package to get live crypto prices from CoinGecko
 
 
 ## Pip Installation
- Foe installation simply use:
+ For installation simply use:
 
 ```sh
 pip install CryptoTrackerr
