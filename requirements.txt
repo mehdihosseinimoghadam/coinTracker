@@ -1,5 +1,0 @@
-redis
-requests
-fastapi
-uvicorn
-argparse
