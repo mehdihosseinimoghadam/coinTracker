@@ -1,0 +1,8 @@
+setup.py
+CryptoTrackerpy/__init__.py
+CryptoTrackerpy/tracker.py
+CryptoTrackerr.egg-info/PKG-INFO
+CryptoTrackerr.egg-info/SOURCES.txt
+CryptoTrackerr.egg-info/dependency_links.txt
+CryptoTrackerr.egg-info/requires.txt
+CryptoTrackerr.egg-info/top_level.txt

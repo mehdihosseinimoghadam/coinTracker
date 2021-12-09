@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: CryptoTrackerr
+Version: 0.0.2
+Summary: Live Crypto Price API From CoinGecko
+Home-page: UNKNOWN
+Author: Mehdi Hosseini Moghadam, Hanie Poursina
+Author-email: <m.h.moghadam1996@gmail.com> , <hanieh.poursina@gmail.com>
+License: UNKNOWN
+Keywords: python,cryptocurrency,crypto price,coingecko,coin,crypro api
+Platform: UNKNOWN
+Classifier: Development Status :: 1 - Planning
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+
+UNKNOWN
+
