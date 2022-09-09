@@ -28,7 +28,7 @@ def get_coins_info_from_api(q: str):
         idx = d[q]
         URL = f"https://api.coingecko.com/api/v3/coins/{idx}"
         r = requests.get(url=URL)
-        return r.json()
+        #return r.json()
 
     return r.json()
 
